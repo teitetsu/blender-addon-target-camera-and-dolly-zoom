@@ -11,14 +11,14 @@ Blenderのカメラに以下の機能を提供します。
 - カメラからターゲットまでの距離を調整
 - ターゲットの回転をカメラに一致
 
-![ターゲットカメラ動作](images\target_camera_01.gif)
+![ターゲットカメラ動作](images/target_camera_01.gif)
 
 ## ドリーズーム機能
 
 - **ターゲットカメラ時のみ有効**
 - カメラのドリー（前後移動）と、ズームを同時調整
 
-![ドリーズーム動作](images\dolly_zoom_01.gif)
+![ドリーズーム動作](images/dolly_zoom_01.gif)
 
 ## インストール方法（Blender 4.2.7 LTS）
 
@@ -28,7 +28,7 @@ Blenderのカメラに以下の機能を提供します。
 4. チェックボックスをオンにして有効化
 
 追加される場所はカメラのデータプロパティ
-![追加される場所](images\addon_location_01.jpg)
+![追加される場所](images/addon_location_01.jpg)
 
 ## 仕様
 
@@ -45,5 +45,6 @@ Blenderのカメラに以下の機能を提供します。
     - Roll Empty
       - Camera
 - Target Empty
+
 
 Rotation Emptyにトラックコンストレインを適応、ロール角度はRoll Emptyで制御
