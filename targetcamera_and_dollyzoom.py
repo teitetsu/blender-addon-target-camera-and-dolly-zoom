@@ -1,7 +1,7 @@
 bl_info = {
     "name": "Target Camera Tools",
     "author": "Teitetsu",
-    "version": (1, 0),
+    "version": (1, 0, 1),
     "blender": (4, 2, 7), 
     "location": "Properties > Camera > Lens",
     "description": "ターゲットカメラの作成とドリーズーム機能",
@@ -91,10 +91,32 @@ def toggle_camera_mode(cam_obj):
     track_constraint = cam_obj.constraints.get(CONSTRAINT_NAME)
     target_obj =get_target_obj(cam_obj)
 
+    # 複数のカメラが一つのターゲットを参照している場合
+    # （ターゲットカメラのコピー時に発生）
+    if target_obj and is_target_shared(target_obj,cam_obj):
+        # 元のターゲットを複製
+        new_target = target_obj.copy()
+        if new_target.data:
+            new_target.data = target_obj.data.copy()
+        new_target.name = TARGET_NAME
+        
+        # 複製したターゲットを、シーンにリンク
+        coll = cam_obj.users_collection[0] if cam_obj.users_collection else bpy.context.scene.collection
+        coll.objects.link(new_target)
+
+        # target_objの再代入
+        target_obj = new_target
+
+        # コンストレインのターゲットを修正
+        if track_constraint:
+            track_constraint.target = target_obj
+
+
+    # 処理：標準カメラ → ターゲットカメラ
+    # （トラックコンストレインが無い場合の処理）
     if not track_constraint:
-        #トラックコンストレインが無い場合の処理
-        # A. 子のターゲットがある場合：ペアレント解除
-        if target_obj or is_target_shared(target_obj,cam_obj):
+        # A. すでに子のターゲットがある場合：ペアレント解除
+        if target_obj:
             # 1. 現在のマトリクスを一時保管
             matrix_copy = target_obj.matrix_world.copy()        
             # 2. 親子関係を解除
@@ -108,13 +130,13 @@ def toggle_camera_mode(cam_obj):
             # カメラ前方5ｍ、エンプティを作成
             target_loc = cam_obj.matrix_world @ mathutils.Vector((0, 0, -5))
 
-            empty_data = None # エンプティにデータは不要
+            empty_data = None
             target_obj = bpy.data.objects.new(TARGET_NAME, empty_data)
             target_obj.empty_display_type = 'PLAIN_AXES'
             target_obj.empty_display_size = 0.1
             target_obj.location = target_loc
 
-            # カメラをシーンにリンク
+            # エンプティをシーンにリンク
             coll = cam_obj.users_collection[0] if cam_obj.users_collection else bpy.context.scene.collection
             coll.objects.link(target_obj)
 
